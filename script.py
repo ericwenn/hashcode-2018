@@ -1,20 +1,7 @@
 import math
 
+files = ['b_should_be_easy.in', 'c_no_hurry.in', 'd_metropolis.in', 'e_high_bonus.in']
 file = "e_high_bonus.in"
-
-input = open(file, "r")
-
-first = input.readline().split()
-
-rows = int(first[0])
-cols = int(first[1])
-vehicles = int(first[2])
-n_rides = int(first[3])
-bonus = int(first[4])
-steps = int(first[5])
-
-rides = []
-veh = []
 
 class Ride:
 
@@ -29,21 +16,6 @@ class Ride:
     def __str__( self ):
       return "Ride " + str(self.id) + " From: " + str(self.fro) + " To: " + str(self.to) + " Starting: " + str(self.start) + " Ending: " + str(self.end)
 
-i = 0
-for line in input:
-    lin = line.split()
-    lin = list(map(lambda x: int(x), lin))
-    rides.append(Ride((lin[0], lin[1]), (lin[2], lin[3]), lin[4], lin[5], i))
-    i += 1
-
-#print map(lambda x: str(x), rides)
-
-for i in range(0, vehicles):
-    veh.append({
-        "rides": [],
-        "step": 0,
-        "pos": (0,0)
-    })
 
 def criterion(ride, veh):
     return dist(ride.fro, veh["pos"]) + ride.end
@@ -65,40 +37,75 @@ def dist(a, b):
 def time(ride, veh):
     return max(dist(ride.fro, veh["pos"]) + veh["step"], ride.start) + dist(ride.fro, ride.to)
 
-for v in veh:
-    while (v["step"] < steps):
-        min = 100000000
-        minIndex = None
+def main(_file):
+  input = open(_file, "r")
 
-        for i in range(0, len(rides)):
+  first = input.readline().split()
 
-            #print worthless(rides[i], v)
+  rows = int(first[0])
+  cols = int(first[1])
+  vehicles = int(first[2])
+  n_rides = int(first[3])
+  bonus = int(first[4])
+  steps = int(first[5])
 
-            if (worthless(rides[i], v)):
-                continue
+  rides = []
+  veh = []
+
+  i = 0
+  for line in input:
+      lin = line.split()
+      lin = list(map(lambda x: int(x), lin))
+      rides.append(Ride((lin[0], lin[1]), (lin[2], lin[3]), lin[4], lin[5], i))
+      i += 1
+
+  #print map(lambda x: str(x), rides)
+
+  for i in range(0, vehicles):
+      veh.append({
+          "rides": [],
+          "step": 0,
+          "pos": (0,0)
+      })
+
+  for v in veh:
+      while (v["step"] < steps):
+          min = 100000000
+          minIndex = None
+
+          for i in range(0, len(rides)):
+
+              #print worthless(rides[i], v)
+
+              if (worthless(rides[i], v)):
+                  continue
 
 
 
-            if (criterion(rides[i], v) < min):
-                min = criterion(rides[i], v)
-                minIndex = i
+              if (criterion(rides[i], v) < min):
+                  min = criterion(rides[i], v)
+                  minIndex = i
 
-        #print min, minIndex
+          #print min, minIndex
 
-        if (minIndex == None):
-            break
+          if (minIndex == None):
+              break
 
-        v["rides"].append(rides[minIndex].id)
-        v["step"] += time(rides[minIndex], v)
-        v["pos"] = rides[minIndex].to
-        rides.pop(minIndex)
+          v["rides"].append(rides[minIndex].id)
+          v["step"] += time(rides[minIndex], v)
+          v["pos"] = rides[minIndex].to
+          rides.pop(minIndex)
 
-print veh
+  print veh
 
-output = ""
+  output = ""
 
-for v in veh:
-    output += str(len(v["rides"])) + " " + " ".join(map(lambda x: str(x), v["rides"])) + "\n"
+  for v in veh:
+      output += str(len(v["rides"])) + " " + " ".join(map(lambda x: str(x), v["rides"])) + "\n"
 
-_output = open("out_" + file, "w")
-_output.write(output)
+  _output = open("out_" + file, "w")
+  _output.write(output)
+
+
+for _file in files:
+  main(_file)
